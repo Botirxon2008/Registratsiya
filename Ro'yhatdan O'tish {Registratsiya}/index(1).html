@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+</head>
+<body style="background-color: rgb(6, 205, 240);">
+	<div id="signup" style=" width: 25%;height: 320px;border: 1px solid black;margin: auto;margin-top: 50px;background-color:rgb(127, 220, 236);">
+		<h2 style="text-align: center; margin-top: -5px;">Registratsiya</h2>
+		<form style="margin-left: 35px;margin-top: -17px;">
+			<input style="margin-top: 20px;color: rgb(6, 205, 240);" id="name" type="text" name="" placeholder="Ismingizni kiriting"><br>
+			<input style="margin-top: 20px;color: rgb(6, 205, 240);" id="lastname" type="text" name="" placeholder="Familiyangizni kiriting"><br>
+			<input style="margin-top: 20px;color: rgb(6, 205, 240);" id="username" type="text" name="" placeholder="Loginingizni kiriting"><br>
+			<input style="margin-top: 20px;color: rgb(6, 205, 240);" id="pass" type="password" name="" placeholder="Parolingizni kiriting"><br>
+			<input style="margin-top: 20px;color: rgb(6, 205, 240);" id="confirm_pass" type="password" name="" placeholder="Parolingizni takrorlang"><br><br>
+			<input  style="width: 45%;height: 25px;border-radius: 8px; margin-top: 20px;margin-left: 40px;background-color: rgb(6, 205, 240);" id="signup_btn" type="submit" name="" style="background-color:rgb(6, 205, 240) ;">
+			<p id="errorText" style="display: none; color: #ff5252;"></p>
+		</form>
+	</div>
+	<div id="login" style="display: none;width: 25%;height: 250px;border: 1px solid black;margin: auto;margin-top: 50px;background-color:rgb(127, 220, 236);">
+		<h3 style="text-align: center;">Login va Parolingizni <br> takrorlang</h3>
+		<form style="margin-left: 35px;margin-top: -17px;">
+			<input style="margin-top: 20px;color: rgb(6, 205, 240);" id="login_username" type="text" name="" placeholder="Loginni takrorlang">
+			<input style="margin-top: 20px;color: rgb(6, 205, 240);" id="login_pass" type="password" name="" placeholder="Parolingizni takrorlang">
+			<input id="login_btn" type="submit" name="" style="width: 45%;height: 25px;border-radius: 8px;border: none; margin-top: 20px;margin-left: 40px;background-color: rgb(6, 205, 240);">
+			<p id="login_Erorrtext" style="display: none; color: #ff5252;margin-left: 20px;"></p>
+		</form>
+	</div>
+	<div id="myData" style="display: none;"></div>
+	
+	<script type="text/javascript">
+		function Register() {
+			let doc = document,
+				signup = doc.getElementById("signup"),
+				login = doc.getElementById('login'),
+				signup_btn = doc.getElementById('signup_btn'),
+				login_btn = doc.getElementById('login_btn');
+
+			if (localStorage.getItem("data")) {
+				signup.style.display = "none";
+				login.style.display = "block";
+			}
+			signup_btn.onclick = () => {
+				event.preventDefault();
+				let signupName = doc.getElementById('name'),
+					signupLastname = doc.getElementById('lastname'),
+					signupUsername = doc.getElementById('username'),
+					signupPass = doc.getElementById('pass'),
+					signupConfirm_pass = doc.getElementById('confirm_pass'),
+					signupErrorText = doc.getElementById('errorText');
+
+					if (!signupName.value.trim() || !signupLastname.value.trim() || !signupUsername.value.trim() || !signupPass.value.trim() || !signupConfirm_pass.value.trim()) {
+						signupErrorText.style.display = "block";
+						signupErrorText.textContent = "Barcha maydonni to'ldiring!";
+						return;
+					}
+					if (signupPass.value.trim() !== signupConfirm_pass.value.trim()) {
+						signupErrorText.style.display = "block";
+						signupErrorText.textContent = "Qayta kiritilgan parol xato";
+						return;
+					}
+					signup.style.display = "none";
+					login.style.display = "block";
+					const myData = {
+						'name' : signupName.value,
+						'lastname' : signupLastname.value,
+						'username' : signupUsername.value,
+						'pass' : signupPass.value,
+						inn : function () {
+							let innDiv = document.getElementById('myData');
+							innDiv.innerHTML = `${this.name} ${this.lastname} ${this.username} ${this.pass}`;
+						}
+					}
+					localStorage.setItem("data", JSON.stringify(myData));
+					login_btn.onclick = () => {
+						event.preventDefault();
+						let login_username = doc.getElementById("login_username"),
+							login_pass = doc.getElementById("login_pass"),
+							login_Erorrtext = doc.getElementById("login_Erorrtext");
+						if (!login_username.value.trim() || !login_pass.value.trim()) {
+							login_Erorrtext.textContent = "Barcha maydonni to'ldiring!";
+							return;
+						}
+						let localData = JSON.parse(localStorage.getItem("data"));
+						if (localData) {
+							if (localData.username == login_username.value.trim() && localData.pass == login_pass.value.trim()) {
+								login.style.display = "none";
+								document.getElementById('myData').style.display = "block";
+								document.getElementById('myData').innerHTML = `${localData.name} ${localData.lastname} ${localData.username} ${localData.pass}`;
+										return;
+							}else{
+								login_Erorrtext.style.display = "block";
+								login_Erorrtext.textContent = "Login yoki porol xato!";
+							}
+						}
+					}
+					
+					myData.inn();
+			}
+
+			login_btn.onclick = () => {
+				event.preventDefault();
+				let login_username = doc.getElementById("login_username"),
+					login_pass = doc.getElementById("login_pass"),
+					login_Erorrtext = doc.getElementById("login_Erorrtext");
+				if (!login_username.value.trim() || !login_pass.value.trim()) {
+					login_Erorrtext.textContent = "Barcha maydonni to'ldiring!";
+					return;
+				}
+
+				let localData = JSON.parse(localStorage.getItem("data"));
+				if (localData) {
+					if (localData.username == login_username.value.trim() && localData.pass == login_pass.value.trim()) {
+						login.style.display = "none";
+						document.getElementById('myData').style.display = "block";
+						document.getElementById('myData').innerHTML = `
+						<div style="width: 25%;height: 350px;border: 1px solid black;margin: auto;margin-top: 50px;background-color:rgb(127, 220, 236);">
+						    <h2 style="text-align:center;">Registratsiyadan mofaqyatli <br>o'tdingiz</h2>
+							 <button style="width:200px;height:30px;margin-left:30px;margin-top:20px;">Ismingiz:${localData.name}</button>
+					          <button style="width:200px;height:30px;margin-left:30px;margin-top:20px;">Familiyangiz:${localData.lastname}</button>
+						      <button style="width:200px;height:30px;margin-left:30px;margin-top:20px;">Loginingiz:${localData.username}</button>
+					          <button style="width:200px;height:30px;margin-left:30px;margin-top:20px;">Parolingiz:${localData.pass}</button>
+						</div>
+						`;
+								return;
+					}else{
+						doc.getElementById("login_Erorrtext").style.display = "block";
+						doc.getElementById("login_Erorrtext").textContent = "Login yoki porol xato!";
+					}
+						
+				}
+			}
+		}
+		Register();
+	</script>
+</body>
+
+</html>
